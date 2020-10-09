@@ -1,0 +1,14 @@
+#! /bin/sh
+printf "Content-Type: text/html\n\n"
+
+page="$(cat /www/cgi-bin/dsl.template)"
+dates="$(awk 'BEGIN { ORS="\", \"" }; { print $4 }' /tmp/dsl_log)"
+dates="\"${dates%, \"}"
+fecs="$(awk 'BEGIN { ORS=", " }; { print $20 }' /tmp/dsl_log)"
+fecs="${fecs%, }"
+es="$(awk 'BEGIN { ORS=", " }; { print $22 }' /tmp/dsl_log)"
+es="${es%, }"
+secs="$(awk 'END { print substr($29,4) }' /tmp/dsl_log)"
+uptime="$(printf '%02dd:%02dh:%02dm:%02ds\n' $(($secs/86400)) $(($secs%86400/3600)) $(($secs%3600/60)) $(($secs%60)))"
+printf "$page" "$uptime" "$dates" "$fecs" "$dates" "$es"
+
